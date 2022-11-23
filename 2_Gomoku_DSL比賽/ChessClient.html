@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>五子棋</title>
+
+<script src="socket.io.js"></script>
+<script src="connect.js"></script>
+
+</head>
+
+<body>
+
+<canvas id="Chess" width="500" height="500"></canvas> 
+
+ip<input id="serverIP" type="text" value="127.0.0.1"/> 
+Name<input id="name" type="text" value="abc123"/> 
+<button value="test" onclick="Register()">連線</button>
+<br>
+<font id="test"></font>
+
+</body>
+
+
+<script src="setting.js"></script>
+
+<script>
+
+	function otherData(x,y){
+		console.log("對手下"+x+","+y);
+	}
+
+	//random
+ 	function randoms(){
+
+		var ranok = true;
+		var maxNumX = (chessX-1);  
+		var maxNumY = (chessY-1); 	
+		var ran = {x:0,y:0};
+		
+		while(ranok){
+			ran.x =  Math.floor(Math.random() * (maxNumX + 1));
+			ran.y =  Math.floor(Math.random() * (maxNumX + 1));
+			if(cheesspace[ran.x][ran.y] == 2){
+				ranok = false;	
+			}
+		}
+		
+		return ran;
+	}
+
+	CreateChessBoard();
+	
+	
+</script>
+
+</html>
