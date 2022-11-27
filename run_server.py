@@ -1,4 +1,4 @@
-import gomokuserver.server as server
+import gomoku_socket.server as server
 
 
 if __name__ == '__main__':
