@@ -38,10 +38,10 @@ if __name__ == '__main__':
     # chess.set_chessboard(10,10)
     # chess.set_chessboard(11,11)
 
-    chess.set_chessboard(7,7)
-    chess.set_chessboard(6,6)
-    chess.set_chessboard(5,5)
-    chess.set_chessboard(4,4)
+    # chess.set_chessboard(7,7)
+    # chess.set_chessboard(6,6)
+    # chess.set_chessboard(5,5)
+    # chess.set_chessboard(4,4)
     chess.set_chessboard(3,3)
     data = {'chess_record': chess.get_chessboard()}
     client.connect()
