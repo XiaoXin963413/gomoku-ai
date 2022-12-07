@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # chess.set_chessboard(7,10)
     # chess.set_chessboard(7,11)
 
-    # chess.set_chessboard(7,7)
+    chess.set_chessboard(7,7)
     # chess.set_chessboard(6,8)
     # chess.set_chessboard(5,9)
     # chess.set_chessboard(4,10)
