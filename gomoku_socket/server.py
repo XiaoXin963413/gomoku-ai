@@ -1,7 +1,7 @@
 import asyncio, json
+import gomoku_ai.base as gomokuai
 
-class GomokuServer(asyncio.Protocol):
-
+class GomokuServer(asyncio.Protocol, gomokuai.gomokuAI):
     def connection_made(self, transport):
         self.__transport = transport
         self.__address = transport.get_extra_info('peername')
@@ -24,7 +24,9 @@ class GomokuServer(asyncio.Protocol):
     def __parse(self, require):
         if (require['chess_record']):
             self.__print_chessborad(require['chess_record'])
-        return require
+            self.set_board(require['chess_record'])
+            response = {'game_over': self.Next_step(), 'next_step': require['chess_record']}
+        return response
 
     def __print_chessborad(self, chseeborad):
         for i in chseeborad:
@@ -32,7 +34,7 @@ class GomokuServer(asyncio.Protocol):
                 if j == 0:
                     print("[ ", end="")
                 print(i[j], end=" ")
-                if j == 18:
+                if j == len(chseeborad) - 1:
                     print("]", end="")
             print()
 

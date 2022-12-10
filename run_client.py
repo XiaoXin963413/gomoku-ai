@@ -27,10 +27,10 @@ if __name__ == '__main__':
     # chess.set_chessboard(7,11)
 
     chess.set_chessboard(7,7)
-    # chess.set_chessboard(6,8)
-    # chess.set_chessboard(5,9)
-    # chess.set_chessboard(4,10)
-    # chess.set_chessboard(3,11)
+    chess.set_chessboard(6,8)
+    chess.set_chessboard(5,9)
+    chess.set_chessboard(4,10)
+    chess.set_chessboard(3,11)
 
     # chess.set_chessboard(7,7)
     # chess.set_chessboard(8,8)
@@ -49,5 +49,5 @@ if __name__ == '__main__':
     client.send_data(data)
     data = client.recv_data()
 
-    print_chessborad(data['chess_record'])
-    print(chess.check_five())
+    print_chessborad(data['next_step'])
+    print(data['game_over'])
