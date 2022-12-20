@@ -23,7 +23,7 @@ class GomokuServer(asyncio.Protocol, gomokuai.gomokuAI):
 
     def __parse(self, require):
         if (require['chess_record']):
-            self.__print_chessborad(require['chess_record'])
+            # self.__print_chessborad(require['chess_record'])
             self.set_board(require['chess_record'])
             response = {'game_over': self.Next_step(), 'next_step': require['chess_record']}
         return response

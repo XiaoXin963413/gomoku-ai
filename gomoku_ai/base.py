@@ -8,6 +8,15 @@ class BaseBoard():
         self.__col = len(board)
         self.__row = len(board)
 
+    def __check_straight_line(self, val, list, num):
+        if (list == []): 
+            return False
+        if 0 not in list:
+            return False
+        if (list.count(val) == num and list.count(0) == 1):
+            return True;
+        return False;
+        
     def __check_all_list(self, val, list):
         if (list == []): 
             return False
@@ -15,6 +24,8 @@ class BaseBoard():
 
     def __check_upper_right(self, position, len):
         x, y = position[0], position[1]
+        if (x+5 >= self.__col or y+5 >= self.__row):
+            return False
         list = []
         j = 0
         for i in range(len):
@@ -24,6 +35,8 @@ class BaseBoard():
 
     def __check_bottom_right(self, position, len):
         x, y = position[0], position[1]
+        if (x+5 >= self.__col or y+5 >= self.__row):
+            return False
         list = []
         j = 0
         for i in range(len):
@@ -32,13 +45,13 @@ class BaseBoard():
         return self.__check_all_list(self.__board[x][y], list)
 
     def check_five(self):
-        for y in range(self.__col):
-            for x in range(self.__row):
-                if self.__board[y][x] == 0:
+        for x in range(self.__col):
+            for y in range(self.__row):
+                if self.__board[x][y] == 0:
                     continue
                 if self.__check_all_list(self.__board[x][y], self.__board[x][y:y+5:1]):
                     return True
-                if self.__check_all_list(self.__board[x][y], self.__board[x][y:y-5:-1]):
+                if self.__check_all_list(self.__board[x][y], [i[y] for i in self.__board[5:5+5:1]]):
                     return True
                 if self.__check_bottom_right([x, y], 5):
                     return True
@@ -46,6 +59,24 @@ class BaseBoard():
                     return True
         return False
 
+    def check_check(self):
+        for x in range(self.__col):
+            for y in range(self.__row):
+                if self.__board[x][y] == 0:
+                    continue
+                if self.__check_straight_line(self.__board[x][y], self.__board[x][y:y+5:1], 4):
+                    return True
+                if self.__check_straight_line(self.__board[x][y], [i[y] for i in self.__board[5:5+5:1]], 4):
+                    return True
+                # if self.__check_bottom_right([x, y], 5):
+                #     return True
+                # if self.__check_upper_right([x, y], 5):
+                #     return True  
+        return False
+
 class gomokuAI(BaseBoard):
     def Next_step(self):
-        return self.check_five()
+        if self.check_five():
+            return "Five chess line."
+        if self.check_check():
+            return "Check!"
