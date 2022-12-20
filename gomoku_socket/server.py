@@ -1,5 +1,5 @@
 import asyncio, json
-import gomoku_ai.base as gomokuai
+import gomoku_ai.gomoku_ai as gomokuai
 
 class GomokuServer(asyncio.Protocol, gomokuai.gomokuAI):
     def connection_made(self, transport):
