@@ -20,11 +20,11 @@ if __name__ == '__main__':
 
     # chess.randon_chessborad()
 
-    # chess.set_chessboard(7,9)    
-    # chess.set_chessboard(7,10)
-    # chess.set_chessboard(7,11)
-    # chess.set_chessboard(7,12)
-    # chess.set_chessboard(7,13)
+    # chess.set_chessboard(7,4)    
+    chess.set_chessboard(7,5)
+    chess.set_chessboard(7,6)
+    chess.set_chessboard(7,7)
+    chess.set_chessboard(7,8)
 
     # chess.set_chessboard(5,0)
     # chess.set_chessboard(5,7)
@@ -32,11 +32,11 @@ if __name__ == '__main__':
     # chess.set_chessboard(7,7)
     # chess.set_chessboard(8,7)
 
-    chess.set_chessboard(5,5)
-    chess.set_chessboard(6,6)
-    chess.set_chessboard(7,7)
-    chess.set_chessboard(8,8)
-    chess.set_chessboard(9,9)
+    # chess.set_chessboard(5,5)
+    # chess.set_chessboard(6,6)
+    # chess.set_chessboard(7,7)
+    # chess.set_chessboard(8,8)
+    # chess.set_chessboard(9,9)
 
     # chess.set_chessboard(8,5)
     # chess.set_chessboard(7,6)
