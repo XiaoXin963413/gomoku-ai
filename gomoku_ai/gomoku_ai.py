@@ -5,6 +5,16 @@ class gomokuAI(base.BaseBoard):
     def __init__(self):
         super().__init__()
         self.minint = -2147483648
+        self.__evaluate_table = self.__set_evaluate_table()
+
+    def __set_evaluate_table(self):
+        return {
+            ('live', 5) : 10000, ('death', 5) : 10000, ('close', 5) : 10000,
+            ('live', 4) : 1000, ('death', 4) : 100, ('close', 5) : 0,
+            ('live', 3) : 10, ('death', 3) : 1, ('close', 3) : 0,
+            ('live', 2) : 2, ('death', 1) : 1, ('close', 2) : 0,
+            ('live', 1) : 1, ('death', 1) : 1, ('close', 1) : 0,
+        }
 
     def __create_state(self, current, position, player):
         tmp = copy.deepcopy(current)
@@ -21,15 +31,21 @@ class gomokuAI(base.BaseBoard):
     def __evaluate_board(self, next_state):
         for x in range(self._BOARD_SIZE):
             for y in range(self._BOARD_SIZE):
-                if self._check_connected(next_state, x, y, 5):
-                    return 10000
-                if self._check_connected(next_state, x, y, 4):
-                    return 1000
-                if self._check_connected(next_state, x, y, 3):
-                    return 100
-                if self._check_connected(next_state, x, y, 2):
-                    return 10
-        return 1
+                result = self._check_connected(next_state, x, y, 5)
+                if result:
+                    return self.__evaluate_table[(result, 5)]
+                result = self._check_connected(next_state, x, y, 4)
+                if result:
+                    return self.__evaluate_table[(result, 4)]
+                result = self._check_connected(next_state, x, y, 3)
+                if result:
+                    return self.__evaluate_table[(result, 3)]
+                result = self._check_connected(next_state, x, y, 2)
+                if result:
+                    return self.__evaluate_table[(result, 2)]
+                result = self._check_connected(next_state, x, y, 1)
+                if result:
+                    return self.__evaluate_table[(result, 1)]
 
     def Next_step(self):
         state = "None"
@@ -50,6 +66,6 @@ class gomokuAI(base.BaseBoard):
                 if value > best_value:
                     best_value = value
                     position = [x, y]
-                    state = position
+                    state = best_value
 
         return state

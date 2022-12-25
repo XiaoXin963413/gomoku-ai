@@ -7,6 +7,7 @@ class BaseBoard():
     def set_board(self, board):
         self._board = board
         self._BOARD_SIZE = len(board)
+        self.__live_state = {0: "close", 1: "death", 2: "live"}
 
     def __get_left(self, position, current, num):
         x, y = position[0], position[1]
@@ -53,19 +54,49 @@ class BaseBoard():
 
     # Check if there are number pieces connected
     def _check_connected(self, current, x, y, num):
+        live_state = 0
         if current[x][y] == 0:
             return False
         # check left, bottom, upper left, bottom left
         if (self.__check_all_list(current[x][y], self.__get_left([x, y], current, num))
                 and y + num <= self._BOARD_SIZE):
-            return True
+            # check this connected is live or death
+            if (y + num + 1 < self._BOARD_SIZE):
+                if (current[x][y + num + 1] == 0):
+                    live_state += 1
+            if (y - 1 > -1):
+                if (current[x][y - 1] == 0):
+                    live_state += 1
+            return self.__live_state[live_state]
+
         if (self.__check_all_list(current[x][y], self.__get_bottom([x, y], current, num))
                 and x + num <= self._BOARD_SIZE):
-            return True
+            if (x + num + 1 < self._BOARD_SIZE):
+                if (current[x + num + 1][y] == 0):
+                    live_state += 1
+            if (x - 1 > -1):
+                if (current[x - 1][y] == 0):
+                    live_state += 1
+            return self.__live_state[live_state]
+
         if (self.__check_all_list(current[x][y], self.__get_upper_left([x, y], current, num))
                 and y - num <= self._BOARD_SIZE):
-            return True
+            if (y + num + 1 < self._BOARD_SIZE):
+                if (current[x - num - 1][y + num + 1] == 0):
+                    live_state += 1
+            if (y - 1 > -1 and x - 1 > -1):
+                if (current[x + 1][y - 1] == 0):
+                    live_state += 1
+            return self.__live_state[live_state]
+
         if (self.__check_all_list(current[x][y], self.__get_bottom_left([x, y], current, num))
                 and y + num <= self._BOARD_SIZE):
-            return True
+            if (y + num + 1 < self._BOARD_SIZE and x + num + 1 < self._BOARD_SIZE):
+                if (current[x + num + 1][y + num + 1] == 0):
+                    live_state += 1
+            if (y - 1 > -1 and x - 1 > -1):
+                if (current[x - 1][y - 1] == 0):
+                    live_state += 1
+            return self.__live_state[live_state]
+
         return False
