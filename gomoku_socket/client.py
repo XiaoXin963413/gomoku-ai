@@ -21,7 +21,7 @@ class GomokuClient:
         self.sock.sendall(data.encode('utf-8'))
 
     def recv_data(self):
-        self.__response = self.recv_until(self.sock, b'}')
+        self.__response = self.sock.recv(4096)
         return (json.loads(self.__response)) 
 
         # self.recvdata = json.loads(self.recvdata)

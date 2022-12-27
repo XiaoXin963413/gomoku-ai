@@ -4,7 +4,7 @@ import numpy as np
 
 
 class BaseBoard():
-    def set_board(self, board):
+    def Set_board(self, board):
         self._board = board
         self._BOARD_SIZE = len(board)
         self.__live_state = {0: "close", 1: "death", 2: "live"}
