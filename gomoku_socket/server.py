@@ -25,9 +25,8 @@ class GomokuServer(asyncio.Protocol, gomokuai.gomokuAI):
         if (require['chess_record']):
             # self.__print_chessborad(require['chess_record'])
             self.Set_board(require['chess_record'])
-            self.Set_player(2)
-            state, move = self.Next_step()
-            response = {'game_state': state, 'next_step': move}
+            move = self.Next_step(2)
+            response = {'game_state': move}
         return response
 
     def __print_chessborad(self, chseeborad):

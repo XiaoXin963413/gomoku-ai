@@ -52,6 +52,13 @@ class BaseBoard():
                     print("]", end="")
             print()
 
+    def _check_win(self, current):
+        for x in range(self._BOARD_SIZE):
+            for y in range(self._BOARD_SIZE):
+                if self._check_connected(current, x, y, 5):
+                    return current[x][y]
+        return False
+
     # Check if there are number pieces connected
     def _check_connected(self, current, x, y, num):
         live_state = 0
@@ -100,3 +107,12 @@ class BaseBoard():
             return self.__live_state[live_state]
 
         return False
+
+    def _check_single_chess(self, current, x, y):
+        if (x+1 < self._BOARD_SIZE and y+1 < self._BOARD_SIZE and x-1 >= 0 and y-1 >= 0):
+            if (current[x][y] == current[x][y] == current[x][y] == current[x][y] ==
+                    current[x][y] == current[x][y] == current[x][y] == current[x][y] == 0):
+                return 'live'
+            return 'death'
+        else:
+            return 'close'

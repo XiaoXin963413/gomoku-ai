@@ -27,8 +27,11 @@ if __name__ == '__main__':
 
         print_chessborad(chess.get_chessboard())
 
-        x = int(input("Please input x:"))
-        y = int(input("Please input y:"))
+        x, y = 10, 10
+        while x > 9 or not(isinstance(x, int)):
+            x = int(input("Please input x:"))
+        while y > 9 or not(isinstance(y, int)):
+            y = int(input("Please input y:"))
 
         chess.set_chessboard(y, x)
 
@@ -39,5 +42,7 @@ if __name__ == '__main__':
         client.send_data(data)
         data = client.recv_data()
 
-        print("this score:",data['game_state'])
+        chess.set_chessboard_com(data['game_state'][0], data['game_state'][1])
+
+        print("this score:", data['game_state'])
     
