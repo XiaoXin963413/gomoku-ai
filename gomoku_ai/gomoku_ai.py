@@ -5,109 +5,96 @@ class gomokuAI(base.BaseBoard):
     def __init__(self):
         super().__init__()
         self.minint = -2147483648
+        self.maxint = 2147483648
         self.__player = 0
         self.__evaluate_table = self.__set_evaluate_table()
 
     def __set_evaluate_table(self):
         return {
-            ('live', 5) : 100000, ('death', 5) : 100000, ('close', 5) : 100000,
-            ('live', 4) : 10000, ('death', 4) : 1000, ('close', 4) : 0,
-            ('live', 3) : 1000, ('death', 3) : 100, ('close', 3) : 0,
-            ('live', 2) : 100, ('death', 2) : 10, ('close', 2) : 0,
-            ('live', 1) : 10, ('death', 1) : 1, ('close', 1) : 0,
+            ('alive', 5) : 100000, ('death', 5) : 100000, ('close', 5) : 100000,
+            ('alive', 4) : 10000, ('death', 4) : 1000, ('close', 4) : 0,
+            ('alive', 3) : 1000, ('death', 3) : 100, ('close', 3) : 0,
+            ('alive', 2) : 100, ('death', 2) : 10, ('close', 2) : 0,
+            ('alive', 1) : 10, ('death', 1) : 1, ('close', 1) : 0,
         }
 
-    def __piece_chess(self, current, position, player):
-        tmp = copy.deepcopy(current)
+    def __piece_chess(self, board, position, player):
+        tmp = copy.deepcopy(board)
         x, y = position[0], position[1]
         tmp[x][y] = player
         return tmp
 
-    def __get_winner(self, value):
-        if value == 1:
-            return "Player win!"
-        else:
-            return "Computer win!"
-
-    def __evaluate_board(self, next_state, player):
+    def __evaluate_role(self, board, role):
         value = 0
         for x in range(self._BOARD_SIZE):
             for y in range(self._BOARD_SIZE):
-                if (next_state[x][y] != player):
+                if (board[x][y] != role):
                     continue
-                result = self._check_connected(next_state, x, y, 5)
-                if result:
-                    value = value + self.__evaluate_table[(result, 5)]
-                result = self._check_connected(next_state, x, y, 4)
-                if result:
-                    value = value + self.__evaluate_table[(result, 4)]
-                result = self._check_connected(next_state, x, y, 3)
-                if result:
-                    value = value + self.__evaluate_table[(result, 3)]
-                result = self._check_connected(next_state, x, y, 2)
-                if result:
-                    value = value + self.__evaluate_table[(result, 2)]
-                result = self._check_single_chess(next_state, x, y)
-                if result:
-                    value = value + self.__evaluate_table[(result, 1)]
+                for num in range(2, 6):
+                    result = self._check_connected(board, [x, y], num)
+                    if result:
+                        value += self.__evaluate_table[(result, num)]
+                        continue
+                    result = self._check_single_chess(board, x, y)
+                    if result:
+                        value += self.__evaluate_table[(result, num)]
+                        continue
         return value
 
-    def Next_step(self, player):
-        best_value = self.minint
-        for x in range(self._BOARD_SIZE):
-            for y in range(self._BOARD_SIZE):
-                if self._check_connected(self._board, x, y, 5):
-                    return self.__get_winner(self._board[x][y])
+    def __evaluate_board(self, board):
+        return self.__evaluate_role(board, 2) - self.__evaluate_role(board, 1)
 
+    def __game_over(self, borad):
         for x in range(self._BOARD_SIZE):
             for y in range(self._BOARD_SIZE):
-                if (self._board[x][y] != 0):
+                if (borad[x][y] == 0):
                     continue
-                next_state = self.__piece_chess(self._board, [x, y], player)
-                value = self.__evaluate_board(next_state, player)
-                if value > best_value:
-                    best_value = value
-                    position = [x, y]
+                if self._check_connected(borad, [x, y], 5):
+                    return True
+        return False
 
-        return position
+    def __get_possible_moves(self, board):
+        possible_moves = []
+        for x in range(self._BOARD_SIZE):
+            for y in range(self._BOARD_SIZE):
+                if board[x][y] != 0:
+                    continue
+                possible_moves.append((x, y))
+        return possible_moves
 
-    # def getBestMove(self, depth):
-    #   _, bestPosition = self.minimax(self._board, depth, -0, 0, False)
-    #   return bestPosition
+    def minimax(self, board, depth, alpha, beta, maximizingPlayer):
+        if depth == 0 or self.__game_over(board):
+            value = self.__evaluate_board(board)
+            return value, None
 
+        if maximizingPlayer:
+            max_eval = self.minint
+            base_move = None
+            for move in self.__get_possible_moves(board):
+                next_board = self.__piece_chess(board, [move[0], move[1]], 1)
+                eval, _ = self.minimax(next_board, depth-1, alpha, beta, False)
+                if eval > max_eval:
+                    max_eval = eval
+                    base_move = move
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    print(alpha)
+                    self._print_chessborad(next_board)
+                    break # beta cut-off
+            return max_eval, base_move
 
-    # def minimax(self, broad, depth, alpha, beta, layer):
-    #     if depth == 0 or self._check_win(broad):
-    #         print(self.__evaluate_board(broad, 1) if layer else self.__evaluate_board(broad, 2), None)
-    #         return self.__evaluate_board(broad, 1) if layer else self.__evaluate_board(broad, 2), None
-
-    #     if layer:
-    #         bestValue = self.minint
-    #         for x in range(self._BOARD_SIZE):
-    #             for y in range(self._BOARD_SIZE):
-    #                 if (self._board[x][y] != 0):
-    #                     continue
-    #                 new_state = self.__piece_chess(self._board, [x, y], 1)
-    #                 value, _ = self.minimax(new_state, depth - 1, alpha, beta, False)
-    #                 if value > bestValue:
-    #                     bestValue = value
-    #                     bestPosition = [x, y]
-    #                 alpha = max(alpha, value)
-    #                 if alpha >= beta:
-    #                     break
-    #                 return bestValue, bestPosition
-    #     else:
-    #         bestValue = self.minint
-    #         for x in range(self._BOARD_SIZE):
-    #             for y in range(self._BOARD_SIZE):
-    #                 if (self._board[x][y] != 0):
-    #                     continue
-    #                 new_state = self.__piece_chess(self._board, [x, y], 2)
-    #                 value, _ = self.minimax(new_state, depth - 1, alpha, beta, True)
-    #                 if value > bestValue:
-    #                     bestValue = value
-    #                     bestPosition = [x, y]
-    #                 alpha = max(alpha, value)
-    #                 if alpha >= beta:
-    #                     break
-    #                 return bestValue, bestPosition
+        else:
+            minEval = self.maxint
+            bestMove = None
+            for move in self.__get_possible_moves(board):
+                next_board = self.__piece_chess(board, [move[0], move[1]], 2)
+                eval, _ = self.minimax(next_board, depth-1, alpha, beta, True)
+                if eval < minEval:
+                    minEval = eval
+                    bestMove = move
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    print(beta)
+                    self._print_chessborad(next_board)
+                    break # alpha cut-off
+            return minEval, bestMove

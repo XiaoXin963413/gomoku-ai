@@ -33,7 +33,7 @@ if __name__ == '__main__':
         while y > 9 or not(isinstance(y, int)):
             y = int(input("Please input y:"))
 
-        chess.set_chessboard(y, x)
+        chess.set_chessboard(x, y)
 
         print('\033c', end='')
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         client.send_data(data)
         data = client.recv_data()
 
-        chess.set_chessboard_com(data['game_state'][0], data['game_state'][1])
+        chess.set_chessboard_com(data['move'][0], data['move'][1])
 
-        print("this score:", data['game_state'])
+        print("this score:", data['score'], "move:", data['move'])
     

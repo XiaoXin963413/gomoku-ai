@@ -7,112 +7,86 @@ class BaseBoard():
     def Set_board(self, board):
         self._board = board
         self._BOARD_SIZE = len(board)
-        self.__live_state = {0: "close", 1: "death", 2: "live"}
+        self.__live_state = {0: "close", 1: "death", 2: "alive"}
 
-    def __get_left(self, position, current, num):
-        x, y = position[0], position[1]
-        return current[x][y:y+num:1]
+    def _print_chessborad(self, board):
+        print("    ", end = "")
+        for i in range(len(board)):
+            print(i, end = " ")
+        print()
 
-    def __get_bottom(self, position, current, num):
-        x, y = position[0], position[1]
-        return [i[y] for i in current[y:y+num:1]]
-
-    def __get_upper_left(self, position, current, num):
-        x, y = position[0], position[1]
-        if (x - num) > self._BOARD_SIZE or (y + num) > self._BOARD_SIZE:
-            return []
-        i, j, list = 0, 0, []
-        for _ in range(num):
-            list.append(current[x+i][y+j])
-            i, j = i - 1, j + 1
-        return list
-
-    def __get_bottom_left(self, position, current, num):
-        x, y = position[0], position[1]
-        if (x + num) > self._BOARD_SIZE or (y + num) > self._BOARD_SIZE:
-            return []
-        i, j, list = 0, 0, []
-        for _ in range(num):
-            list.append(current[x+i][y+j])
-            i, j = i + 1, j + 1
-        return list
-
-    def __check_all_list(self, var, list):
-        if (list == []):
-            return False
-        return all(x == var and x is not True for x in list)
-
-    def _print_chessborad(self, chseeborad):
-        for i in chseeborad:
+        for index, i in enumerate(board):
             for j in range(0, len(i)):
                 if j == 0:
-                    print("[ ", end="")
+                    print(index , "[ ", end="")
                 print(i[j], end=" ")
                 if j == len(i) - 1:
                     print("]", end="")
             print()
 
-    def _check_win(self, current):
-        for x in range(self._BOARD_SIZE):
-            for y in range(self._BOARD_SIZE):
-                if self._check_connected(current, x, y, 5):
-                    return current[x][y]
+    def __check_alive(self, board, x, y, direction, num):
+        state = 0
+        if direction == (0, 1):
+            if y+num < len(board):
+                if board[x][y+num] == 0:
+                    state += 1
+            if y-1 >= 0:
+                if board[x][y-1] == 0:
+                    state += 1
+            return self.__live_state[state]
+        if direction == (1, 0):
+            if x+num < len(board):
+                if board[x+num][y] == 0:
+                    state += 1
+            if x-1 >= 0:
+                if board[x-1][y] == 0:
+                    state += 1
+            return self.__live_state[state]
+        if direction == (1, 1):
+            if x+num < len(board) and y+num < len(board):
+                if board[x+num][y+num] == 0:
+                    state += 1
+            if x-1 >= 0 and y-1>=0:
+                if board[x-1][y-1] == 0:
+                    state += 1
+            return self.__live_state[state]
+        if direction == (-1, 1):
+            if x-num >= 0 and y+num < len(board):
+                if board[x-num][y+num] == 0:
+                    state += 1
+            if x+1 < len(board) and y-1>=0:
+                if board[x+1][y-1] == 0:
+                    state += 1
+            return self.__live_state[state]
+
+    def __check_line(self, board, x, y, direction, origin):
+        dx, dy = direction[0], direction[1]
+        count = 1
+        while True:
+            x += dx
+            y += dy
+            if x < 0 or x >= len(board) or y < 0 or y >= len(board[0]):
+                break
+            if board[x][y] != origin:
+                break
+            count += 1
+        return count
+
+    def _check_connected(self, board, position, num):
+        directions = [(1, 0), (0, 1), (1, 1), (-1, 1)]
+        x, y = position[0], position[1]
+        origin = board[x][y]
+        for direction in directions:
+            count = self.__check_line(board, x, y, direction, origin)
+            if count == num:
+                return self.__check_alive(board, x, y, direction, num)
         return False
 
-    # Check if there are number pieces connected
-    def _check_connected(self, current, x, y, num):
-        live_state = 0
-        if current[x][y] == 0:
-            return False
-        # check left, bottom, upper left, bottom left
-        if (self.__check_all_list(current[x][y], self.__get_left([x, y], current, num))
-                and y + num <= self._BOARD_SIZE):
-            # check this connected is live or death
-            if (y + num + 1 < self._BOARD_SIZE):
-                if (current[x][y + num + 1] == 0):
-                    live_state += 1
-            if (y - 1 > -1):
-                if (current[x][y - 1] == 0):
-                    live_state += 1
-            return self.__live_state[live_state]
-
-        if (self.__check_all_list(current[x][y], self.__get_bottom([x, y], current, num))
-                and x + num <= self._BOARD_SIZE):
-            if (x + num + 1 < self._BOARD_SIZE):
-                if (current[x + num + 1][y] == 0):
-                    live_state += 1
-            if (x - 1 > -1):
-                if (current[x - 1][y] == 0):
-                    live_state += 1
-            return self.__live_state[live_state]
-
-        if (self.__check_all_list(current[x][y], self.__get_upper_left([x, y], current, num))
-                and y - num <= self._BOARD_SIZE):
-            if (y + num + 1 < self._BOARD_SIZE):
-                if (current[x - num - 1][y + num + 1] == 0):
-                    live_state += 1
-            if (y - 1 > -1 and x - 1 > -1):
-                if (current[x + 1][y - 1] == 0):
-                    live_state += 1
-            return self.__live_state[live_state]
-
-        if (self.__check_all_list(current[x][y], self.__get_bottom_left([x, y], current, num))
-                and y + num <= self._BOARD_SIZE):
-            if (y + num + 1 < self._BOARD_SIZE and x + num + 1 < self._BOARD_SIZE):
-                if (current[x + num + 1][y + num + 1] == 0):
-                    live_state += 1
-            if (y - 1 > -1 and x - 1 > -1):
-                if (current[x - 1][y - 1] == 0):
-                    live_state += 1
-            return self.__live_state[live_state]
-
-        return False
-
-    def _check_single_chess(self, current, x, y):
+    def _check_single_chess(self, board, x, y):
         if (x+1 < self._BOARD_SIZE and y+1 < self._BOARD_SIZE and x-1 >= 0 and y-1 >= 0):
-            if (current[x][y] == current[x][y] == current[x][y] == current[x][y] ==
-                    current[x][y] == current[x][y] == current[x][y] == current[x][y] == 0):
-                return 'live'
+            if (board[x][y] == board[x][y] == board[x][y] == board[x][y] ==
+                    board[x][y] == board[x][y] == board[x][y] == board[x][y] == 1):
+                return 'alive'
             return 'death'
         else:
             return 'close'
