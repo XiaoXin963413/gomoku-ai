@@ -4,10 +4,23 @@ import numpy as np
 
 
 class BaseBoard():
+    def __init__(self):
+        self.__live_state = {0: "close", 1: "death", 2: "alive"}
+
     def Set_board(self, board):
         self._board = board
         self._BOARD_SIZE = len(board)
-        self.__live_state = {0: "close", 1: "death", 2: "alive"}
+
+    def Is_board_empty(self):
+        for x in self._board:
+            for y in x:
+                if y != 0:
+                    return False
+        return True
+
+    def Get_center_move(self):
+        center = self._BOARD_SIZE // 2
+        return (center + random.randint(-2, 2), center + random.randint(-2, 2))
 
     def _print_chessborad(self, board):
         print("    ", end="")

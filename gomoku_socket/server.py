@@ -28,10 +28,14 @@ class GomokuServer(asyncio.Protocol, gomokuai.gomokuAI):
             # self.__print_chessborad(require['chess_record'])
             self.Set_board(require['chess_record'])
             start = time.perf_counter()
-            score, move, best_board = self.minimax(require['chess_record'], 4, self.minint, self.maxint, True)
+            if self.Is_board_empty():
+                move = self.Get_center_move()
+                score, best_board = 0, require['chess_record']
+            else:
+                score, move, best_board = self.minimax(require['chess_record'], 4, self.minint, self.maxint, True)
             end = time.perf_counter()
             print("best score: {}, best move: {}.".format(score, move))
-            print("elapsed time: {:.6f} seconds, recursion times: {}.".format(end - start, self.Get_count()))
+            print("elapsed time: {:.6f}s, recursion times: {}.".format(end - start, self.Get_count()))
             self._print_chessborad(best_board)
             # score, move = self.test(require['chess_record'])
             response = {'score': score, 'move': move}

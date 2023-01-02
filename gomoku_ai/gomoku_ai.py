@@ -7,19 +7,24 @@ class gomokuAI(base.BaseBoard):
         self.minint = -2147483648
         self.maxint = 2147483648
         self.__evaluate_table = self.__set_evaluate_table()
+        self.__search_range = {'normal':[-1, 0, 1], 'hard':[-2, -1, 0, 1, 2]}
+        self.__difficulty = self.Set_difficulty()
         self.__inv_player = {1:2, 2:1}
         self.__count = 0
 
     def Get_count(self):
         return self.__count
 
+    def Set_difficulty(self, config='normal'):
+        return self.__search_range[config]
+
     def __set_evaluate_table(self):
         return {
             ('alive', 5) : 100000, ('death', 5) : 100000, ('close', 5) : 100000,
             ('alive', 4) : 10000, ('death', 4) : 5000, ('close', 4) : 0,
-            ('alive', 3) : 1000, ('death', 3) : 100, ('close', 3) : 0,
-            ('alive', 2) : 100, ('death', 2) : 10, ('close', 2) : 0,
-            ('alive', 1) : 10, ('death', 1) : 1, ('close', 1) : 0,
+            ('alive', 3) : 1000, ('death', 3) : 500, ('close', 3) : 0,
+            ('alive', 2) : 100, ('death', 2) : 50, ('close', 2) : 0,
+            ('alive', 1) : 10, ('death', 1) : 5, ('close', 1) : 0,
         }
 
     def __piece_chess(self, board, position, player):
@@ -58,16 +63,18 @@ class gomokuAI(base.BaseBoard):
     #     return possible_moves
 
     def __get_possible_moves(self, board):
-        possible_moves = []
+        possible_moves = {}
         for i in range(self._BOARD_SIZE):
             for j in range(self._BOARD_SIZE):
                 if board[i][j] == 0:
                     continue
-                for x in [-1, 1]:
-                    for y in [-1, 1]:
-                        if i + x >= 0 and i + x < len(board) and j + y >= 0 and j + y < len(board[i]) and board[i + x][j + y] == 0:
-                            possible_moves.append((i + x, j + y))
-        return possible_moves
+                for x in self.__difficulty:
+                    for y in self.__difficulty:
+                        if x == 0 and y == 0:
+                            continue
+                        if i + x >= 0 and i + x < self._BOARD_SIZE and j + y >= 0 and j + y < self._BOARD_SIZE and board[i + x][j + y] == 0:
+                            possible_moves[(i + x, j + y)] = True
+        return list(possible_moves.keys())
 
     def minimax(self, board, depth, alpha, beta, maximizingPlayer):
         self.__count += 1
@@ -78,6 +85,8 @@ class gomokuAI(base.BaseBoard):
         if maximizingPlayer:
             max_score = self.minint
             best_move = None
+            if depth == 4:
+                print(self.__get_possible_moves(board))
             for move in self.__get_possible_moves(board):
                 next_board = self.__piece_chess(board, [move[0], move[1]], 2)
                 score, _, last_board = self.minimax(next_board, depth-1, alpha, beta, False)
