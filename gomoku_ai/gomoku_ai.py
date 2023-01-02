@@ -6,13 +6,14 @@ class gomokuAI(base.BaseBoard):
         super().__init__()
         self.minint = -2147483648
         self.maxint = 2147483648
-        self.__player = 0
         self.__evaluate_table = self.__set_evaluate_table()
+        self.__inv_player = {1:2, 2:1}
+        self.__count = 0
 
     def __set_evaluate_table(self):
         return {
             ('alive', 5) : 100000, ('death', 5) : 100000, ('close', 5) : 100000,
-            ('alive', 4) : 10000, ('death', 4) : 1000, ('close', 4) : 0,
+            ('alive', 4) : 10000, ('death', 4) : 5000, ('close', 4) : 0,
             ('alive', 3) : 1000, ('death', 3) : 100, ('close', 3) : 0,
             ('alive', 2) : 100, ('death', 2) : 10, ('close', 2) : 0,
             ('alive', 1) : 10, ('death', 1) : 1, ('close', 1) : 0,
@@ -30,15 +31,15 @@ class gomokuAI(base.BaseBoard):
             for y in range(self._BOARD_SIZE):
                 if (board[x][y] != role):
                     continue
-                for num in range(2, 6):
+                for num in range(5, 1, -1):
                     result = self._check_connected(board, [x, y], num)
                     if result:
                         value += self.__evaluate_table[(result, num)]
                         continue
-                    result = self._check_single_chess(board, x, y)
-                    if result:
-                        value += self.__evaluate_table[(result, num)]
-                        continue
+                result = self._check_single_chess(board, x, y, self.__inv_player[role])
+                if result:
+                    value += self.__evaluate_table[(result, 1)]
+                    continue
         return value
 
     def __evaluate_board(self, board):
@@ -63,38 +64,38 @@ class gomokuAI(base.BaseBoard):
         return possible_moves
 
     def minimax(self, board, depth, alpha, beta, maximizingPlayer):
+        print(self.__count)
+        self.__count += 1
         if depth == 0 or self.__game_over(board):
             value = self.__evaluate_board(board)
-            return value, None
+            return value, None, board
 
         if maximizingPlayer:
-            max_eval = self.minint
+            max_score = self.minint
             base_move = None
             for move in self.__get_possible_moves(board):
-                next_board = self.__piece_chess(board, [move[0], move[1]], 1)
-                eval, _ = self.minimax(next_board, depth-1, alpha, beta, False)
-                if eval > max_eval:
-                    max_eval = eval
-                    base_move = move
-                alpha = max(alpha, eval)
-                if beta <= alpha:
-                    print(alpha)
-                    self._print_chessborad(next_board)
+                next_board = self.__piece_chess(board, [move[0], move[1]], 2)
+                score, _, cur = self.minimax(next_board, depth-1, alpha, beta, False)
+                if score > max_score:
+                    max_score = score
+                    base_move =  move
+                    out = cur
+                alpha = max(alpha, max_score)
+                if beta < alpha:
                     break # beta cut-off
-            return max_eval, base_move
+            return max_score, base_move, out
 
         else:
-            minEval = self.maxint
-            bestMove = None
+            min_score = self.maxint
+            best_move = None
             for move in self.__get_possible_moves(board):
-                next_board = self.__piece_chess(board, [move[0], move[1]], 2)
-                eval, _ = self.minimax(next_board, depth-1, alpha, beta, True)
-                if eval < minEval:
-                    minEval = eval
-                    bestMove = move
-                beta = min(beta, eval)
-                if beta <= alpha:
-                    print(beta)
-                    self._print_chessborad(next_board)
+                next_board = self.__piece_chess(board, [move[0], move[1]], 1)
+                score, _, cur = self.minimax(next_board, depth-1, alpha, beta, True)
+                if score < min_score:
+                    min_score = score
+                    base_move =  move
+                    out = cur
+                beta = min(beta, min_score)
+                if beta < alpha:
                     break # alpha cut-off
-            return minEval, bestMove
+            return min_score, best_move, out

@@ -20,12 +20,11 @@ def print_chessborad(chseeborad):
 
 if __name__ == '__main__':
 
-    chess = ch.GomokuGame(10, 10)
+    chess = ch.GomokuGame(6, 6)
     client = gs.GomokuClient()
 
+    print_chessborad(chess.get_chessboard())
     while True:
-
-        print_chessborad(chess.get_chessboard())
 
         x, y = 10, 10
         while x > 9 or not(isinstance(x, int)):
@@ -36,6 +35,7 @@ if __name__ == '__main__':
         chess.set_chessboard(x, y)
 
         print('\033c', end='')
+        print_chessborad(chess.get_chessboard())
 
         data = {'chess_record': chess.get_chessboard()}
         client.connect()
@@ -44,5 +44,7 @@ if __name__ == '__main__':
 
         chess.set_chessboard_com(data['move'][0], data['move'][1])
 
+        print('\033c', end='')
         print("this score:", data['score'], "move:", data['move'])
+        print_chessborad(chess.get_chessboard())
     

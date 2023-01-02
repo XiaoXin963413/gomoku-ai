@@ -10,15 +10,15 @@ class BaseBoard():
         self.__live_state = {0: "close", 1: "death", 2: "alive"}
 
     def _print_chessborad(self, board):
-        print("    ", end = "")
+        print("    ", end="")
         for i in range(len(board)):
-            print(i, end = " ")
+            print(i, end=" ")
         print()
 
         for index, i in enumerate(board):
             for j in range(0, len(i)):
                 if j == 0:
-                    print(index , "[ ", end="")
+                    print(index, "[ ", end="")
                 print(i[j], end=" ")
                 if j == len(i) - 1:
                     print("]", end="")
@@ -46,7 +46,7 @@ class BaseBoard():
             if x+num < len(board) and y+num < len(board):
                 if board[x+num][y+num] == 0:
                     state += 1
-            if x-1 >= 0 and y-1>=0:
+            if x-1 >= 0 and y-1 >= 0:
                 if board[x-1][y-1] == 0:
                     state += 1
             return self.__live_state[state]
@@ -54,7 +54,7 @@ class BaseBoard():
             if x-num >= 0 and y+num < len(board):
                 if board[x-num][y+num] == 0:
                     state += 1
-            if x+1 < len(board) and y-1>=0:
+            if x+1 < len(board) and y-1 >= 0:
                 if board[x+1][y-1] == 0:
                     state += 1
             return self.__live_state[state]
@@ -82,10 +82,10 @@ class BaseBoard():
                 return self.__check_alive(board, x, y, direction, num)
         return False
 
-    def _check_single_chess(self, board, x, y):
+    def _check_single_chess(self, board, x, y, role):
         if (x+1 < self._BOARD_SIZE and y+1 < self._BOARD_SIZE and x-1 >= 0 and y-1 >= 0):
-            if (board[x][y] == board[x][y] == board[x][y] == board[x][y] ==
-                    board[x][y] == board[x][y] == board[x][y] == board[x][y] == 1):
+            if (board[x][y+1] == board[x+1][y] == board[x][y-1] == board[x+1][y] ==
+                    board[x+1][y+1] == board[x-1][y+1] == board[x+1][y-1] == board[x-1][y-1] == role):
                 return 'alive'
             return 'death'
         else:
