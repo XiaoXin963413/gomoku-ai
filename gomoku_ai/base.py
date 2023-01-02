@@ -24,6 +24,15 @@ class BaseBoard():
                     print("]", end="")
             print()
 
+    def _game_over(self, borad):
+        for x in range(self._BOARD_SIZE):
+            for y in range(self._BOARD_SIZE):
+                if (borad[x][y] == 0):
+                    continue
+                if self._check_connected(borad, [x, y], 5):
+                    return True
+        return False
+
     def __check_alive(self, board, x, y, direction, num):
         state = 0
         if direction == (0, 1):
