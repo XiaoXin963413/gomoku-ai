@@ -3,10 +3,15 @@ import gomoku_game.chess as ch
 
 
 def print_chessborad(chseeborad):
-    for i in chseeborad:
+    print("    ", end = "")
+    for i in range(len(chseeborad)):
+        print(i, end = " ")
+    print()
+
+    for index, i in enumerate(chseeborad):
         for j in range(0, len(i)):
             if j == 0:
-                print("[ ", end="")
+                print(index , "[ ", end="")
             print(i[j], end=" ")
             if j == len(i) - 1:
                 print("]", end="")
@@ -15,40 +20,31 @@ def print_chessborad(chseeborad):
 
 if __name__ == '__main__':
 
-    chess = ch.GomokuGame(10, 10)
+    chess = ch.GomokuGame(6, 6)
     client = gs.GomokuClient()
 
-    # chess.randon_chessborad()
+    print_chessborad(chess.get_chessboard())
+    while True:
 
-    chess.set_chessboard(7,4)    
-    # chess.set_chessboard(7,5)
-    # chess.set_chessboard(7,6)
-    # chess.set_chessboard(7,7)
-    # chess.set_chessboard(7,8)
+        x, y = 10, 10
+        while x > 9 or not(isinstance(x, int)):
+            x = int(input("Please input x:"))
+        while y > 9 or not(isinstance(y, int)):
+            y = int(input("Please input y:"))
 
-    # chess.set_chessboard(5,0)
-    # chess.set_chessboard(5,7)
-    # chess.set_chessboard(6,7)
-    # chess.set_chessboard(7,7)
-    # chess.set_chessboard(8,7)
+        chess.set_chessboard(x, y)
 
-    chess.set_chessboard(5,5)
-    chess.set_chessboard(6,6)
-    # chess.set_chessboard(7,7)
-    chess.set_chessboard(8,8)
-    # chess.set_chessboard(9,9)
+        print('\033c', end='')
+        print_chessborad(chess.get_chessboard())
 
-    # chess.set_chessboard(8,5)
-    # chess.set_chessboard(7,6)
-    # chess.set_chessboard(6,7)
-    # chess.set_chessboard(5,8)
-    # chess.set_chessboard(4,9)
+        data = {'chess_record': chess.get_chessboard()}
+        client.connect()
+        client.send_data(data)
+        data = client.recv_data()
 
-    data = {'chess_record': chess.get_chessboard()}
-    client.connect()
+        chess.set_chessboard_com(data['move'][0], data['move'][1])
 
-    client.send_data(data)
-    data = client.recv_data()
-
-    print_chessborad(data['next_step'])
-    print(data['game_over'])
+        print('\033c', end='')
+        print("this score:", data['score'], "move:", data['move'])
+        print_chessborad(chess.get_chessboard())
+    
