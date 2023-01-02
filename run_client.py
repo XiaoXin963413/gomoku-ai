@@ -20,7 +20,7 @@ def print_chessborad(chseeborad):
 
 if __name__ == '__main__':
 
-    chess = ch.GomokuGame(6, 6)
+    chess = ch.GomokuGame(10, 10)
     client = gs.GomokuClient()
 
     print_chessborad(chess.get_chessboard())
